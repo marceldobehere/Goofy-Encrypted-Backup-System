@@ -29,3 +29,11 @@ bin/
 .DS_Store
 
 .idea
+target
+
+input
+output
+
+conf.json
+secret.key
+test.json
