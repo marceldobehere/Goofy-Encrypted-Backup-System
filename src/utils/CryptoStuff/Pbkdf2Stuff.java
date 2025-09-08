@@ -34,7 +34,7 @@ public class Pbkdf2Stuff {
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
-        System.out.println("> Created secure random salt: " + Arrays.toString(secure));
+        // System.out.println("> Created secure random salt: " + Arrays.toString(secure));
         return secure;
     }
 

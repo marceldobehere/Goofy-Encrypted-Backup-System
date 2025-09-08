@@ -17,6 +17,7 @@ public class MainConfig {
     public String outputPath;
     public List<Byte> randomSalt;
     public boolean syncDeletions;
+    public boolean logs;
 
     @Override
     public String toString() {
@@ -26,6 +27,7 @@ public class MainConfig {
                 ", outputPath='" + outputPath + '\'' +
                 ", randomSalt=" + randomSalt +
                 ", syncDeletions=" + syncDeletions +
+                ", logs=" + logs +
                 '}';
     }
 

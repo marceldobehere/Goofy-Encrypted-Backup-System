@@ -79,6 +79,18 @@ public class FsStuff {
         }
     }
 
+    public static boolean WriteEntireFileBytes(String path, byte[] data) {
+        try {
+            CreateFolderIfNotExist(Paths.get(path).getParent().toString());
+            Files.write(Paths.get(path), data);
+            return true;
+        } catch (IOException e) {
+            System.err.println("> WARNING: Failed to write file!");
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public static boolean WriteListToFile(String path, List<String> data) {
         try {
             Files.write(Paths.get(path), data, Charset.defaultCharset());

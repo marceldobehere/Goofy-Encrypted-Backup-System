@@ -14,7 +14,8 @@ yes
   "secretFile": "./secret.key",
   "inputPaths": [ "./input" ],
   "outputPath": "./output",
-  "syncDeletions": false
+  "syncDeletions": false,
+  "logs": true
 }
 ```
 

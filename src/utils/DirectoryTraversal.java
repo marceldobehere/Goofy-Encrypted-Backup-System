@@ -52,7 +52,7 @@ public class DirectoryTraversal {
         }
 
         public String GetHashPath() {
-            return String.join("/", Arrays.stream(path.split("/")).map((str) -> HashStuff.HashInputToStr("_:@/STR/@:_" + path + "_:@/STR/@:_").substring(0, 16)).collect(Collectors.toList()));
+            return String.join("/", Arrays.stream(path.split("/")).map((str) -> HashStuff.HashInputToStr("_:@/STR/@:_" + str + "_:@/STR/@:_").substring(0, 16)).collect(Collectors.toList()));
         }
     }
 
