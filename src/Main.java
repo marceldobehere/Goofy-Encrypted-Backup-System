@@ -18,20 +18,34 @@ public class Main {
 
         System.out.println("> Started with args: " + String.join(",", args));
         String option = "";
-        Console console = System.console();
-        while (!option.equals("backup") && !option.equals("restore")) {
-            System.out.println("> Please choose between \"backup\" and \"restore\".");
-            option = console.readLine("> ").trim();
-            System.out.println();
+        if (args.length > 0)
+            option = args[0];
+
+        while (true) {
+            Console console = System.console();
+            while (!option.equals("backup") && !option.equals("backup-clean") && !option.equals("restore") && !option.equals("exit")) {
+                if (option.isEmpty())
+                    System.out.println("> No option provided.");
+                else
+                    System.out.println("> Unknown option: " + option);
+
+                System.out.println("> Please choose between \"backup\", \"backup-clean\", \"restore\" and \"exit\".");
+                option = console.readLine("> ").trim();
+                System.out.println();
+            }
+
+            if (option.equals("backup"))
+                BackupStuff.DoBackup(false);
+            else if (option.equals("backup-clean"))
+                BackupStuff.DoBackup(true);
+            else if (option.equals("restore"))
+                RestoreStuff.DoRestore("./restore");
+            else if (option.equals("exit"))
+                System.exit(0);
+            else
+                System.err.println("> Unknown option: " + option);
+
+            option = "";
         }
-
-        if (option.equals("backup"))
-            BackupStuff.DoBackup();
-        else if (option.equals("restore"))
-            RestoreStuff.DoRestore("./restore");
-        else
-            System.err.println("> Unknown option: " + option);
-
-        System.out.println("> Done");
     }
 }

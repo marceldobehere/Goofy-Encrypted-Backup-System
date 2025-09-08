@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class BackupStuff {
-    public static void DoBackup() {
+    public static void DoBackup(boolean fullBackup) {
         System.out.println("> Doing Backup");
         final String remoteConf = MainConfig.glob.outputPath + "/main.bin";
         final String remoteConfExtra = "RemoteConfig Yes!";
@@ -24,6 +24,33 @@ public class BackupStuff {
         if (MainConfig.glob.logs)
             System.out.println(remoteTraversal);
         System.out.println();
+
+        if (fullBackup) {
+            System.out.println(" > Wiping backup remains for new clean backup");
+            remoteTraversal.Entries.forEach((val) -> {
+                try {
+                    if (MainConfig.glob.logs)
+                        System.out.println("  > Deleting File/Folder: " + val);
+                    String inPath = val.parentPath + "/" + val.path;
+                    String resPath = MainConfig.glob.outputPath + "/data/" +
+                            DirectoryTraversal.GetParentPathHashFolder(val.parentPath) + "/" +
+                            val.GetHashPath();
+
+                    if (val.isFile) {
+                        FileUtils.forceDelete(new File(resPath + ".bin"));
+                    } else {
+                        FileUtils.forceDelete(new File(resPath));
+                    }
+                } catch (Exception e) {
+                    System.err.println("> WARN/ERROR: Failed to delete file! " + e.getMessage());
+                    System.err.println(val);
+                }
+            });
+
+            remoteTraversal = new DirectoryTraversal();
+        }
+
+
         HashMap<String, DirectoryTraversal.TraversalEntry> remoteSet = remoteTraversal.ConvertToHashMap();
 
         // Local Stuff
@@ -79,22 +106,17 @@ public class BackupStuff {
                         String resPath = MainConfig.glob.outputPath + "/data/" +
                                 DirectoryTraversal.GetParentPathHashFolder(val.parentPath) + "/" +
                                 val.GetHashPath();
-//                        System.out.println("   > In Path:  " + inPath);
-//                        System.out.println("   > Res Path: " + resPath);
 
                         if (val.isFile) {
-//                                    byte[] data = FsStuff.ReadEntireFileBytes(inPath);
-//                                    FsStuff.WriteCompressedEncryptedBytesFile(resPath + ".bin", data, val.EntryToHash());
                             FileUtils.forceDelete(new File(resPath + ".bin"));
                         } else {
-//                                    FsStuff.CreateFolderIfNotExist(resPath);
                             FileUtils.forceDelete(new File(resPath));
                         }
                     } catch (Exception e) {
                         System.err.println("> WARN/ERROR: Failed to delete file!");
                         System.err.println(val);
                         System.err.println(e.getMessage());
-                        e.printStackTrace();
+                        //e.printStackTrace();
                     }
                 }
             });
