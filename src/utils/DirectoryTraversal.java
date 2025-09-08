@@ -1,22 +1,20 @@
 package utils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import utils.CryptoStuff.HashStuff;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class DirectoryTraversal {
-    public class TraversalEntry {
+    public static class TraversalEntry {
         @JsonProperty("pp")
         public String parentPath;
         @JsonProperty("p")
@@ -25,6 +23,10 @@ public class DirectoryTraversal {
         public long newestTime;
         @JsonProperty("f")
         public boolean isFile;
+
+        public TraversalEntry() {
+
+        }
 
         public TraversalEntry(String parentPath, String path, long newestTime, boolean isFile) {
             this.parentPath = parentPath;
@@ -40,11 +42,23 @@ public class DirectoryTraversal {
                     ", path='" + path + '\'' +
                     ", newestTime=" + newestTime +
                     ", isFile=" + isFile +
+                    ", Hash='" + EntryToHash() + "'" +
+                    ", HashPath='" + GetParentPathHashFolder(parentPath) + "/" + GetHashPath() + "'" +
                     '}';
+        }
+
+        public String EntryToHash() {
+            return HashStuff.HashInputToStr(parentPath + "_:@/STR/@:_" + path + "_:@/STR/@:_" + isFile + " LOL " + newestTime).substring(0, 32);
+        }
+
+        public String GetHashPath() {
+            return String.join("/", Arrays.stream(path.split("/")).map((str) -> HashStuff.HashInputToStr("_:@/STR/@:_" + path + "_:@/STR/@:_").substring(0, 16)).collect(Collectors.toList()));
         }
     }
 
-    public List<TraversalEntry> Entries = new ArrayList<>();
+    public static String GetParentPathHashFolder(String parentPath) {
+        return Paths.get(parentPath).getFileName().toString() + " _" + HashStuff.HashInputToStr(parentPath + "_:@/STR/@:_" + parentPath + "_:@/STR/@:_").substring(0, 16) + "_";
+    }
 
     public static long getNewestTime(Path path) {
         BasicFileAttributes view;
@@ -53,31 +67,37 @@ public class DirectoryTraversal {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return Arrays.stream(new long[] {
+        return Arrays.stream(new long[]{
                 view.creationTime().toMillis(),
                 view.lastAccessTime().toMillis(),
                 view.lastModifiedTime().toMillis(),
         }).max().getAsLong();
     }
 
+    public List<TraversalEntry> Entries = new ArrayList<>();
+    public DirectoryTraversal() {
+
+    }
+
     public DirectoryTraversal(List<String> parentPaths) {
         Entries = new ArrayList<>();
-        System.out.println("> Creating Root Directory Traversal for: " + String.join(", ", parentPaths));
+        System.out.println("  > Creating Root Directory Traversal for: " + String.join(", ", parentPaths));
         for (String parentPathStr : parentPaths) {
             Path parentPath = Paths.get(parentPathStr);
-            System.out.println(" > Creating Root Directory Traversal for: " + parentPath);
+            System.out.println("   > Creating Root Directory Traversal for: " + parentPath);
             try (Stream<Path> paths = Files.walk(parentPath)) {
                 paths.forEach((path) -> {
                     Path offset = parentPath.relativize(path);
                     // System.out.println("  > Path \"" + path + "\" = \"" + parentPath + "\" / \"" + offset + "\"");
                     if (Files.isDirectory(path)) {
-                        System.out.println("  > Found Folder: " + path);
+                        // System.out.println("  > Found Folder: " + path);
                         Entries.add(new TraversalEntry(parentPathStr, offset.toString(), getNewestTime(path), false));
                     } else if (Files.isRegularFile(path)) {
-                        System.out.println("  > Found File: " + path);
+                        //  System.out.println("  > Found File: " + path);
                         Entries.add(new TraversalEntry(parentPathStr, offset.toString(), getNewestTime(path), true));
                     } else {
-                        System.out.println("  > Found Unknown: " + path);
+                        System.out.println("    > Found Unknown: " + path);
+                        System.err.println("    > Found Unknown: " + path + " in Traversal for: " + parentPathStr);
                     }
                 });
             } catch (IOException e) {
@@ -85,32 +105,34 @@ public class DirectoryTraversal {
             }
         }
 
-        System.out.println("> Traversal complete!");
-        for (TraversalEntry entry : Entries)
-            System.out.println(" > " + entry);
-        System.out.println("> Entry count: " + Entries.size());
+        System.out.println("  > Traversal complete!\n");
 
-        JsonUtils.CreateJSONFile("./test.json", Entries, false);
+//        System.out.println("> Entries:");
+//        for (TraversalEntry entry : Entries)
+//            System.out.println(" > " + entry);
+//        System.out.println("> Entry count: " + Entries.size());
+
+        //JsonUtils.CreateJSONFile("./test.json", Entries, false);
     }
 
-//    public void SubTraversal(String parentPath, String subPath) {
-//        Path mainPath = Paths.get(parentPath + "/" + subPath);
-//        System.out.println("  > Creating Sub Directory Traversal for: " + mainPath);
-//        File folder = new File(mainPath.to);
-//
-//    }
+    public HashMap<String, TraversalEntry> ConvertToHashMap() {
+        HashMap<String, TraversalEntry> res = new HashMap<>();
 
+        for (TraversalEntry entry : Entries)
+            res.put(entry.EntryToHash(), entry);
 
-//    public static TraversalEntry FromPath(String parentPath, String path, boolean isFile) {
-//        FileTime time = null;
-//        boolean isFile = false;
-//        return new TraversalEntry(parentPath, path, time.toMillis(), isFile);
-//    }
+        return res;
+    }
 
     @Override
     public String toString() {
+//        System.out.println("> Entries:");
+//        for (TraversalEntry entry : Entries)
+//            System.out.println(" > " + entry);
+//        System.out.println("> Entry count: " + Entries.size());
+
         return "DirectoryTraversal{" +
-                "Entries=" + Entries +
+                "Entries (" + Entries.size() + ") =" + Entries +
                 '}';
     }
 }

@@ -33,6 +33,7 @@ target
 
 input
 output
+restore
 
 conf.json
 secret.key

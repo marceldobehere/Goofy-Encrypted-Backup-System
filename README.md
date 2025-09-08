@@ -13,7 +13,8 @@ yes
 {
   "secretFile": "./secret.key",
   "inputPaths": [ "./input" ],
-  "outputPath": "./output"
+  "outputPath": "./output",
+  "syncDeletions": false
 }
 ```
 

@@ -1,4 +1,4 @@
-package utils;
+package utils.CryptoStuff;
 
 import org.apache.commons.codec.binary.Base32;
 
@@ -6,6 +6,33 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class Base32Stuff {
+    public static String ByteArrToB32(byte[] arr) {
+        Base32 base32 = new Base32();
+        return base32.encodeAsString(arr);
+    }
+
+    public static byte[] B32ToByteArr(String b32) {
+        Base32 base32 = new Base32();
+        return base32.decode(b32);
+    }
+
+    public static String B32ToFs(String b32) {
+        return b32.replace('=', '_');
+    }
+
+    public static String FsToB32(String fs) {
+        return fs.replace('_', '=');
+    }
+
+    public static String StringToB32Fs(String path) {
+        return B32ToFs(ByteArrToB32(path.getBytes(StandardCharsets.UTF_8)));
+    }
+
+    public static String B32FsToString(String b32Fs) {
+        return new String(B32ToByteArr(FsToB32(b32Fs)), StandardCharsets.UTF_8);
+    }
+
+
 
     private static final String testStrInput = "test! abc YES 12345 === \" lol";
     private static final byte[] testStrInputArr = new byte[] {116, 101, 115, 116, 33, 32, 97, 98, 99, 32, 89, 69, 83, 32, 49, 50, 51, 52, 53, 32, 61, 61, 61, 32, 34, 32, 108, 111, 108};
@@ -45,31 +72,6 @@ public class Base32Stuff {
             throw new RuntimeException("B32FS to String failed! mismatch");
         System.out.println("  > Initial str matches!");
 
-    }
-
-    public static String ByteArrToB32(byte[] arr) {
-        Base32 base32 = new Base32();
-        return base32.encodeAsString(arr);
-    }
-
-    public static byte[] B32ToByteArr(String b32) {
-        Base32 base32 = new Base32();
-        return base32.decode(b32);
-    }
-
-    public static String B32ToFs(String b32) {
-        return b32.replace('=', '_');
-    }
-
-    public static String FsToB32(String fs) {
-        return fs.replace('_', '=');
-    }
-
-    public static String StringToB32Fs(String path) {
-        return B32ToFs(ByteArrToB32(path.getBytes(StandardCharsets.UTF_8)));
-    }
-
-    public static String B32FsToString(String b32Fs) {
-        return new String(B32ToByteArr(FsToB32(b32Fs)), StandardCharsets.UTF_8);
+        System.out.println(" > Base32 Test successful!\n\n");
     }
 }
