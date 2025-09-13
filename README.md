@@ -41,13 +41,22 @@ There are currently 4 options:
 * `backup-clean` - Starts a completely new backup process and writes all the files / deletes most of the old data as well
 * `restore` - Starts a restoration process and saves the data in your local directory.
 
+### TODOs
+* Profile RAM & CPU
+* Have some kind of ignore system, probably regex-ish based?
+* Save the main.conf file several times if the process fails midway
+* Have some kind of progress indicator in the output (maybe an ETA & speed?)
+* Delete all files first, then all folders
+* Log all attempts (success, error, warn, etc.) into log files
+* Turn into a docker image thingy
+* Set the restore path in either the conf or have it asked in the cli
+* Have a check for remaining space before doing backups incase of insufficient space
+* Keep older versions of the main.conf or have some sort of snapshot system
+* Multithreading?
+* Some kind of extra info in the files in case the main.conf gets lost?
+* Maybe store the main.conf as a recursive tree instead of a giant list to save space
+
 ### Notes
-Apparently it can use a lot of ram LOL. I will optimize it for that sometime.
-
-And it doesn't delete everything yet, sometimes it leaves some file remains on the remote backup directory.
-
-There are some other things like multithreading that id like to add as well.
-
-Also turning this into a docker container so i can put it on my nas where it belongs.
+Rn it doesn't delete everything yet, sometimes it leaves some file remains on the remote backup directory.
 
 But for now its a good start xd
