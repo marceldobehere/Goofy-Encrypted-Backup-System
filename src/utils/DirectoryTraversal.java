@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -43,7 +44,7 @@ public class DirectoryTraversal {
                     ", newestTime=" + newestTime +
                     ", isFile=" + isFile +
                     ", Hash='" + EntryToHash() + "'" +
-                    ", HashPath='" + GetParentPathHashFolder(parentPath) + "/" + GetHashPath() + "'" +
+                    ", HashPath='" + FsStuff.JoinPath(GetParentPathHashFolder(parentPath), GetHashPath()) + "'" +
                     '}';
         }
 
@@ -52,8 +53,16 @@ public class DirectoryTraversal {
         }
 
         public String GetHashPath() {
-            return String.join("/", Arrays.stream(path.split("/")).map((str) -> HashStuff.HashInputToStr("_:@/STR/@:_" + str + "_:@/STR/@:_").substring(0, 16)).collect(Collectors.toList()));
+            return String.join(PathDel(), Arrays.stream(path.split(PathDelRegex())).map((str) -> HashStuff.HashInputToStr("_:@/STR/@:_" + str + "_:@/STR/@:_").substring(0, 16)).collect(Collectors.toList()));
         }
+    }
+
+    public static String PathDel() {
+        return System.getProperty("file.separator");
+    }
+
+    public static String PathDelRegex() {
+        return Matcher.quoteReplacement(System.getProperty("file.separator"));
     }
 
     public static String GetParentPathHashFolder(String parentPath) {
@@ -69,7 +78,7 @@ public class DirectoryTraversal {
         }
         return Arrays.stream(new long[]{
                 view.creationTime().toMillis(),
-                view.lastAccessTime().toMillis(),
+                // view.lastAccessTime().toMillis(),
                 view.lastModifiedTime().toMillis(),
         }).max().getAsLong();
     }

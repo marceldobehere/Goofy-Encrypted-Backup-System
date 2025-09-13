@@ -3,12 +3,20 @@ package utils.CryptoStuff;
 import utils.MainConfig;
 
 import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Arrays;
+import java.util.function.Function;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 public class AesStuff {
 
@@ -174,12 +182,57 @@ public class AesStuff {
             throw new RuntimeException("Arr En/Decryption failed! mismatch");
         System.out.println("  > Arrays match!\n");
 
-
-
-
-
-
-
         System.out.println(" > AES Test successful!\n\n");
+    }
+
+
+
+
+
+
+    public static Function<OutputStream, OutputStream> EncryptStreamRandomIV(String randomStr) {
+        return (data) -> {
+            try {
+                byte[] random = RandomStrToAesBytes(randomStr);
+                byte[] iv = RandomIvBytes();
+
+                if (iv.length != IV_LENGTH_ENCRYPT)
+                    throw new RuntimeException("INVALID IV LEN");
+
+                SecretKeySpec aesKey = generateAesKeyFromBytes(random);
+
+                Cipher cipher = Cipher.getInstance(AES_ALGORITHM_GCM);
+                GCMParameterSpec gcmSpec = new GCMParameterSpec(TAG_LENGTH_ENCRYPT * 8, iv);
+                cipher.init(Cipher.ENCRYPT_MODE, aesKey, gcmSpec);
+
+                data.write(iv);
+                return new CipherOutputStream(data, cipher);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e.getMessage());
+            }
+        };
+    }
+
+    public static Function<InputStream, InputStream> DecryptStreamRandomIV(String randomStr) {
+        return (data) -> {
+            try {
+                byte[] iv = new byte[IV_LENGTH_ENCRYPT];
+                if (data.readNBytes(iv, 0, iv.length) != IV_LENGTH_ENCRYPT)
+                    throw new RuntimeException("INVALID IV LEN READ");
+
+                byte[] random = RandomStrToAesBytes(randomStr);
+                SecretKeySpec aesKey = generateAesKeyFromBytes(random);
+
+                GCMParameterSpec gcmSpec = new GCMParameterSpec(TAG_LENGTH_ENCRYPT * 8, iv);
+                Cipher cipher = Cipher.getInstance(AES_ALGORITHM_GCM);
+                cipher.init(Cipher.DECRYPT_MODE, aesKey, gcmSpec);
+
+                return new CipherInputStream(data, cipher);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException(e.getMessage());
+            }
+        };
     }
 }

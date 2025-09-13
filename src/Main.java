@@ -30,7 +30,7 @@ public class Main {
                     System.out.println("> Unknown option: " + option);
 
                 System.out.println("> Please choose between \"backup\", \"backup-clean\", \"restore\" and \"exit\".");
-                System.out.print("> ");
+                System.out.print("Input> ");
                 option = scanner.nextLine().trim();
                 System.out.println();
             }

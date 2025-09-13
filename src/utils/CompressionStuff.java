@@ -11,7 +11,7 @@ public class CompressionStuff {
     public static void gzip(InputStream is, OutputStream os) throws IOException {
         GZIPOutputStream gzipOs = new GZIPOutputStream(os);
         byte[] buffer = new byte[BUFFER_SIZE];
-        int bytesRead = 0;
+        int bytesRead;
         while ((bytesRead = is.read(buffer)) > -1)
             gzipOs.write(buffer, 0, bytesRead);
         gzipOs.close();
@@ -20,7 +20,7 @@ public class CompressionStuff {
     public static void ungzip(InputStream is, OutputStream os) throws IOException {
         GZIPInputStream gzipIs = new GZIPInputStream(is);
         byte[] buffer = new byte[BUFFER_SIZE];
-        int bytesRead = 0;
+        int bytesRead;
         while ((bytesRead = gzipIs.read(buffer)) > -1)
             os.write(buffer, 0, bytesRead);
         gzipIs.close();
@@ -46,7 +46,23 @@ public class CompressionStuff {
         return os.toByteArray();
     }
 
+    public static OutputStream CompressStream(OutputStream os) {
+        try {
+            return new GZIPOutputStream(os);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
+    public static InputStream DecompressStream(InputStream is) {
+        try {
+            return new GZIPInputStream(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 
     private static final byte[] inputArr = new byte[] {108, 111, 108, 32, 99, 114, 97, 122, 121, 32, 72, 97, 115, 104, 32, 105, 110, 112, 117, 116, 32, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};

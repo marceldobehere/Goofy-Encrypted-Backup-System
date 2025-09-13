@@ -1,17 +1,15 @@
+import utils.*;
+import utils.CryptoStuff.AesStuff;
 import utils.CryptoStuff.HashStuff;
-import utils.DirectoryTraversal;
-import utils.FsStuff;
-import utils.JsonUtils;
-import utils.MainConfig;
 
 public class RestoreStuff {
     public static void DoRestore(String _restorePath) {
         System.out.println("> Doing Restore");
-        final String remoteConf = MainConfig.glob.outputPath + "/main.bin";
+        final String remoteConf = FsStuff.JoinPath(MainConfig.glob.outputPath, "main.bin");
         final String remoteConfExtra = "RemoteConfig Yes!";
 
-        String aRestorePath = _restorePath + "/restore _" + HashStuff.RandomHashStr().substring(0,8) + "_";
-        String restorePath = aRestorePath + "/data";
+        String aRestorePath = FsStuff.JoinPath(_restorePath, "restore _" + HashStuff.RandomHashStr().substring(0,8) + "_");
+        String restorePath = FsStuff.JoinPath(aRestorePath, "data");
         FsStuff.CreateFolderIfNotExist(restorePath);
         System.out.println(" > Restoring to: " + restorePath);
 
@@ -27,7 +25,7 @@ public class RestoreStuff {
         System.out.println();
 
         System.out.println(" > Attempting to save existing traversal data");
-        JsonUtils.CreateJSONFile(aRestorePath + "/main.json", remoteTraversal, false);
+        JsonUtils.CreateJSONFile(FsStuff.JoinPath(aRestorePath, "main.json"), remoteTraversal, false);
 
 
         // Decrypt & Save Files
@@ -36,18 +34,20 @@ public class RestoreStuff {
             try {
                 if (MainConfig.glob.logs)
                     System.out.println("  > Saving File/Folder: " + entry);
-                String inPath = MainConfig.glob.outputPath + "/data/" +
-                        DirectoryTraversal.GetParentPathHashFolder(entry.parentPath) + "/" +
-                        entry.GetHashPath();
-                String resPath = restorePath + "/" +
-                        DirectoryTraversal.GetParentPathHashFolder(entry.parentPath) + "/" +
-                        entry.path;
+                String inPath = FsStuff.JoinPath(MainConfig.glob.outputPath, "data",
+                        DirectoryTraversal.GetParentPathHashFolder(entry.parentPath),
+                        entry.GetHashPath());
+                String resPath = FsStuff.JoinPath(restorePath,
+                        DirectoryTraversal.GetParentPathHashFolder(entry.parentPath),
+                        entry.path);
                 // System.out.println("   > In Path:  " + inPath);
                 // System.out.println("   > Res Path: " + resPath);
 
                 if (entry.isFile) {
-                    byte[] data = FsStuff.ReadCompressedEncryptedBytesFile(inPath + ".bin", entry.EntryToHash());
-                    FsStuff.WriteEntireFileBytes(resPath, data);
+                    GoofyStream stream = FsStuff.CreateGoofyStream(inPath + ".bin", resPath);
+                    stream.connectIs(AesStuff.DecryptStreamRandomIV(entry.EntryToHash()));
+                    stream.connectIs(CompressionStuff::DecompressStream);
+                    stream.complete();
                 } else {
                     FsStuff.CreateFolderIfNotExist(resPath);
                 }

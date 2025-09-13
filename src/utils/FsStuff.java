@@ -4,9 +4,7 @@ import utils.CryptoStuff.AesStuff;
 import utils.CryptoStuff.ArrConv;
 import utils.CryptoStuff.Pbkdf2Stuff;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -43,7 +41,7 @@ public class FsStuff {
         for (String inputPath : MainConfig.glob.inputPaths)
             FsStuff.CreateFolderIfNotExist(inputPath);
         FsStuff.CreateFolderIfNotExist(MainConfig.glob.outputPath);
-        FsStuff.CreateFolderIfNotExist(MainConfig.glob.outputPath + "/data");
+        FsStuff.CreateFolderIfNotExist(JoinPath(MainConfig.glob.outputPath, "data"));
 
         System.out.println("> FS Initialised\n\n");
     }
@@ -129,50 +127,39 @@ public class FsStuff {
         }
     }
 
-    public static boolean WriteEncryptedBytesFile(String path, byte[] data, String randomStr) {
-        try {
-            Files.write(Paths.get(path), AesStuff.EncryptBytesRandomIV(data, randomStr));
-            return true;
-        } catch (IOException e) {
-            System.err.println("> WARNING: Failed to write file!");
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public static byte[] ReadEncryptedBytesFile(String path, String randomStr) {
-        try {
-            return AesStuff.DecryptBytesRandomIV(Files.readAllBytes(Paths.get(path)), randomStr);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static boolean WriteCompressedEncryptedBytesFile(String path, byte[] data, String randomStr) {
-        try {
-            CreateFolderIfNotExist(Paths.get(path).getParent().toString());
-            Files.write(Paths.get(path), AesStuff.EncryptBytesRandomIV(CompressionStuff.Compress(data), randomStr));
-            return true;
-        } catch (IOException e) {
-            System.err.println("> WARNING: Failed to write file!");
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public static byte[] ReadCompressedEncryptedBytesFile(String path, String randomStr) {
-        try {
-            return CompressionStuff.Decompress(AesStuff.DecryptBytesRandomIV(Files.readAllBytes(Paths.get(path)), randomStr));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public static void CreateFolderIfNotExist(String path) {
         try {
             Files.createDirectories(Paths.get(path));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String JoinPath(String base, String... paths) {
+        return Paths.get(base, paths).toString();
+    }
+
+    public static InputStream ReadFileStream(String path) {
+        try {
+            return Files.newInputStream(Paths.get(path));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static OutputStream WriteFileStream(String path) {
+        try {
+            CreateFolderIfNotExist(Paths.get(path).getParent().toString());
+            return Files.newOutputStream(Paths.get(path));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static GoofyStream CreateGoofyStream(String pathIn, String pathOut) {
+        return new GoofyStream(
+                ReadFileStream(pathIn),
+                WriteFileStream(pathOut)
+        );
     }
 }

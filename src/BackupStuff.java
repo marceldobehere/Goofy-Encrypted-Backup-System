@@ -1,8 +1,6 @@
-import utils.DirectoryTraversal;
-import utils.FsStuff;
-import utils.JsonUtils;
-import utils.MainConfig;
+import utils.*;
 import org.apache.commons.io.FileUtils;
+import utils.CryptoStuff.AesStuff;
 
 import java.io.File;
 import java.util.HashMap;
@@ -12,7 +10,7 @@ import java.util.Set;
 public class BackupStuff {
     public static void DoBackup(boolean fullBackup) {
         System.out.println("> Doing Backup");
-        final String remoteConf = MainConfig.glob.outputPath + "/main.bin";
+        final String remoteConf = FsStuff.JoinPath(MainConfig.glob.outputPath, "main.bin");
         final String remoteConfExtra = "RemoteConfig Yes!";
 
         // Remote Stuff
@@ -31,10 +29,9 @@ public class BackupStuff {
                 try {
                     if (MainConfig.glob.logs)
                         System.out.println("  > Deleting File/Folder: " + val);
-                    String inPath = val.parentPath + "/" + val.path;
-                    String resPath = MainConfig.glob.outputPath + "/data/" +
-                            DirectoryTraversal.GetParentPathHashFolder(val.parentPath) + "/" +
-                            val.GetHashPath();
+                    String resPath = FsStuff.JoinPath(MainConfig.glob.outputPath, "data",
+                            DirectoryTraversal.GetParentPathHashFolder(val.parentPath),
+                            val.GetHashPath());
 
                     if (val.isFile) {
                         FileUtils.forceDelete(new File(resPath + ".bin"));
@@ -70,20 +67,22 @@ public class BackupStuff {
                 try {
                     if (MainConfig.glob.logs)
                         System.out.println("  > New File/Folder: " + val);
-                    String inPath = val.parentPath + "/" + val.path;
-                    String resPath = MainConfig.glob.outputPath + "/data/" +
-                            DirectoryTraversal.GetParentPathHashFolder(val.parentPath) + "/" +
-                            val.GetHashPath();
+                    String inPath = FsStuff.JoinPath(val.parentPath, val.path);
+                    String resPath = FsStuff.JoinPath(MainConfig.glob.outputPath, "data",
+                            DirectoryTraversal.GetParentPathHashFolder(val.parentPath),
+                            val.GetHashPath());
                     // System.out.println("   > In Path:  " + inPath);
                     // System.out.println("   > Res Path: " + resPath);
 
                     if (val.isFile) {
-                        byte[] data = FsStuff.ReadEntireFileBytes(inPath);
-                        FsStuff.WriteCompressedEncryptedBytesFile(resPath + ".bin", data, val.EntryToHash());
+                        GoofyStream stream = FsStuff.CreateGoofyStream(inPath, resPath + ".bin");
+                        stream.connectOs(CompressionStuff::CompressStream);
+                        stream.connectOs(AesStuff.EncryptStreamRandomIV(val.EntryToHash()));
+                        stream.complete();
                     } else {
                         FsStuff.CreateFolderIfNotExist(resPath);
                     }
-                    addedFiles.add(val.parentPath + "/" + val.path);
+                    addedFiles.add(FsStuff.JoinPath(val.parentPath, val.path));
                 } catch (Exception e) {
                     System.err.println("> ERROR: Failed to write file!");
                     System.err.println(val);
@@ -98,14 +97,13 @@ public class BackupStuff {
         if (MainConfig.glob.syncDeletions) {
             System.out.println(" > Syncing deletions");
             remoteSet.forEach((key, val) -> {
-                if (!localSet.containsKey(key) && !addedFiles.contains(val.parentPath + "/" + val.path)) {
+                if (!localSet.containsKey(key) && !addedFiles.contains(FsStuff.JoinPath(val.parentPath, val.path))) {
                     try {
                         if (MainConfig.glob.logs)
                             System.out.println("  > Old File/Folder: " + val);
-                        String inPath = val.parentPath + "/" + val.path;
-                        String resPath = MainConfig.glob.outputPath + "/data/" +
-                                DirectoryTraversal.GetParentPathHashFolder(val.parentPath) + "/" +
-                                val.GetHashPath();
+                        String resPath = FsStuff.JoinPath(MainConfig.glob.outputPath, "data",
+                                DirectoryTraversal.GetParentPathHashFolder(val.parentPath),
+                                val.GetHashPath());
 
                         if (val.isFile) {
                             FileUtils.forceDelete(new File(resPath + ".bin"));
