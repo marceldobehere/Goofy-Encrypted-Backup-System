@@ -4,7 +4,7 @@ import utils.CryptoStuff.Base32Stuff;
 import utils.CryptoStuff.HashStuff;
 import utils.CryptoStuff.Pbkdf2Stuff;
 
-import java.io.Console;
+import java.util.Scanner;
 
 
 public class Main {
@@ -22,7 +22,7 @@ public class Main {
             option = args[0];
 
         while (true) {
-            Console console = System.console();
+            Scanner scanner = new Scanner(System.in);
             while (!option.equals("backup") && !option.equals("backup-clean") && !option.equals("restore") && !option.equals("exit")) {
                 if (option.isEmpty())
                     System.out.println("> No option provided.");
@@ -30,7 +30,8 @@ public class Main {
                     System.out.println("> Unknown option: " + option);
 
                 System.out.println("> Please choose between \"backup\", \"backup-clean\", \"restore\" and \"exit\".");
-                option = console.readLine("> ").trim();
+                System.out.print("> ");
+                option = scanner.nextLine().trim();
                 System.out.println();
             }
 
