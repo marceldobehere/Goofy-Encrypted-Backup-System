@@ -23,11 +23,11 @@ public class Main {
 
         while (true) {
             Scanner scanner = new Scanner(System.in);
-            while (!option.equals("backup") && !option.equals("backup-clean") && !option.equals("restore") && !option.equals("exit")) {
-                if (option.isEmpty())
+            while (!option.equals("backup") && !option.equals("backup-clean") && !option.equals("restore") && !option.equals("auto-backup") && !option.equals("exit")) {
+                if (!option.isEmpty())
                     System.out.println("> Unknown option: " + option);
 
-                System.out.println("> Please choose between \"backup\", \"backup-clean\", \"restore\" and \"exit\".");
+                System.out.println("> Please choose between \"backup\", \"backup-clean\", \"auto-backup\", \"restore\" and \"exit\".");
                 System.out.print("Input> ");
                 option = scanner.nextLine().trim();
                 System.out.println();
@@ -37,6 +37,8 @@ public class Main {
                 BackupStuff.DoBackup(false);
             else if (option.equals("backup-clean"))
                 BackupStuff.DoBackup(true);
+            else if (option.equals("auto-backup"))
+                BackupStuff.AutoBackup();
             else if (option.equals("restore"))
                 RestoreStuff.DoRestore("./restore");
             else if (option.equals("exit"))

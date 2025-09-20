@@ -19,6 +19,8 @@ public class MainConfig {
     public boolean syncDeletions;
     public boolean logs;
     public int neededGb;
+    public int autoBackupStartHour;
+    public int autoBackupStartMinute;
 
     @Override
     public String toString() {
@@ -30,6 +32,8 @@ public class MainConfig {
                 ", syncDeletions=" + syncDeletions +
                 ", logs=" + logs +
                 ", neededGb=" + neededGb +
+                ", autoBackupStartHour=" + autoBackupStartHour +
+                ", autoBackupStartMinute=" + autoBackupStartMinute +
                 '}';
     }
 

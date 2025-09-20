@@ -3,7 +3,10 @@ import org.apache.commons.io.FileUtils;
 import utils.CryptoStuff.AesStuff;
 
 import java.io.File;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -187,5 +190,45 @@ public class BackupStuff {
         str.append(s + "s");
 
         return str.toString();
+    }
+
+    public static void AutoBackup() {
+        System.out.println("> Starting Auto Backup");
+        LocalTime timeNow = LocalTime.now(); // LocalTime.of(10, 0, 0);
+        LocalTime timeWanted = LocalTime.of(1, 18, 0); // LocalTime.of(MainConfig.glob.autoBackupStartHour, MainConfig.glob.autoBackupStartMinute, 0);
+        System.out.println(" > Current Time: " + timeNow);
+        System.out.println(" > Starting at: " + timeWanted);
+
+        int diffM = (timeWanted.toSecondOfDay() - timeNow.toSecondOfDay()) / 60;
+        if (diffM < 0)
+            diffM += 60 * 24;
+        System.out.println(" > Starting Diff: " + (diffM / 60) + "h " + (diffM % 60) + "m");
+        System.out.println();
+
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                try {
+                    System.out.println("> Starting Auto Backup at " + LocalTime.now() + ", Date: " + LocalDate.now() + "\n");
+
+                    DoBackup(false);
+
+                    System.out.println("> Auto Backup Complete!");
+                } catch (Exception e) {
+                    System.err.println("> TIMER TASK ERROR: " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        final Timer timer = new Timer();
+        timer.scheduleAtFixedRate(task, (long)diffM * 60 * 1000, 24 * 60 * 60 * 1000);
+        while (true) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 }

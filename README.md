@@ -24,7 +24,9 @@ Still W.I.P
   "outputPath": "./output",
   "syncDeletions": false,
   "logs": true,
-  "neededGb": 500
+  "neededGb": 500,
+  "autoBackupStartHour": 6,
+  "autoBackupStartMinute": 30
 }
 ```
 
