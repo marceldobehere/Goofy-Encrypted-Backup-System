@@ -42,7 +42,6 @@ There are currently 4 options:
 * `restore` - Starts a restoration process and saves the data in your local directory.
 
 ### TODOs
-* Profile RAM & CPU
 * Have some kind of ignore system, probably regex-ish based?
 * Save the main.conf file several times if the process fails midway
 * Have some kind of progress indicator in the output (maybe an ETA & speed?)
@@ -52,11 +51,5 @@ There are currently 4 options:
 * Set the restore path in either the conf or have it asked in the cli
 * Have a check for remaining space before doing backups incase of insufficient space
 * Keep older versions of the main.conf or have some sort of snapshot system
-* Multithreading?
 * Some kind of extra info in the files in case the main.conf gets lost?
 * Maybe store the main.conf as a recursive tree instead of a giant list to save space
-
-### Notes
-Rn it doesn't delete everything yet, sometimes it leaves some file remains on the remote backup directory.
-
-But for now its a good start xd

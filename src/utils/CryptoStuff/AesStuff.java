@@ -6,6 +6,7 @@ import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.io.InputStream;
@@ -84,7 +85,7 @@ public class AesStuff {
     public static final String AES_ALGORITHM = "AES";
     public static final String AES_ALGORITHM_GCM = "AES/GCM/NoPadding";
 
-    public static final Integer IV_LENGTH_ENCRYPT = 12;
+    public static final Integer IV_LENGTH_ENCRYPT = 16;
     public static final Integer TAG_LENGTH_ENCRYPT = 16;
 
     private static SecretKeySpec generateAesKeyFromBytes(byte[] bytes) throws Exception {
@@ -189,6 +190,9 @@ public class AesStuff {
 
 
 
+    public static final String AES_ALGORITHM_CBC = "AES/CBC/PKCS5Padding";
+
+
 
     public static Function<OutputStream, OutputStream> EncryptStreamRandomIV(String randomStr) {
         return (data) -> {
@@ -201,9 +205,9 @@ public class AesStuff {
 
                 SecretKeySpec aesKey = generateAesKeyFromBytes(random);
 
-                Cipher cipher = Cipher.getInstance(AES_ALGORITHM_GCM);
-                GCMParameterSpec gcmSpec = new GCMParameterSpec(TAG_LENGTH_ENCRYPT * 8, iv);
-                cipher.init(Cipher.ENCRYPT_MODE, aesKey, gcmSpec);
+                Cipher cipher = Cipher.getInstance(AES_ALGORITHM_CBC);
+                IvParameterSpec ivSpec = new IvParameterSpec(iv);
+                cipher.init(Cipher.ENCRYPT_MODE, aesKey, ivSpec);
 
                 data.write(iv);
                 return new CipherOutputStream(data, cipher);
@@ -224,9 +228,9 @@ public class AesStuff {
                 byte[] random = RandomStrToAesBytes(randomStr);
                 SecretKeySpec aesKey = generateAesKeyFromBytes(random);
 
-                GCMParameterSpec gcmSpec = new GCMParameterSpec(TAG_LENGTH_ENCRYPT * 8, iv);
-                Cipher cipher = Cipher.getInstance(AES_ALGORITHM_GCM);
-                cipher.init(Cipher.DECRYPT_MODE, aesKey, gcmSpec);
+                IvParameterSpec ivSpec = new IvParameterSpec(iv);
+                Cipher cipher = Cipher.getInstance(AES_ALGORITHM_CBC);
+                cipher.init(Cipher.DECRYPT_MODE, aesKey, ivSpec);
 
                 return new CipherInputStream(data, cipher);
             } catch (Exception e) {

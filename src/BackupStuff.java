@@ -3,9 +3,8 @@ import org.apache.commons.io.FileUtils;
 import utils.CryptoStuff.AesStuff;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class BackupStuff {
     public static void DoBackup(boolean fullBackup) {
@@ -62,33 +61,48 @@ public class BackupStuff {
 
         // Write new Stuff
         System.out.println(" > Writing new Files / Folders");
+        List<DirectoryTraversal.TraversalEntry> toWrite = new ArrayList<>();
         localSet.forEach((key, val) -> {
-            if (!remoteSet.containsKey(key)) {
-                try {
-                    if (MainConfig.glob.logs)
-                        System.out.println("  > New File/Folder: " + val);
-                    String inPath = FsStuff.JoinPath(val.parentPath, val.path);
-                    String resPath = FsStuff.JoinPath(MainConfig.glob.outputPath, "data",
-                            DirectoryTraversal.GetParentPathHashFolder(val.parentPath),
-                            val.GetHashPath());
-                    // System.out.println("   > In Path:  " + inPath);
-                    // System.out.println("   > Res Path: " + resPath);
+                    if (!remoteSet.containsKey(key))
+                        toWrite.add(val);
+                });
 
-                    if (val.isFile) {
-                        GoofyStream stream = FsStuff.CreateGoofyStream(inPath, resPath + ".bin");
-                        stream.connectOs(CompressionStuff::CompressStream);
-                        stream.connectOs(AesStuff.EncryptStreamRandomIV(val.EntryToHash()));
-                        stream.complete();
-                    } else {
-                        FsStuff.CreateFolderIfNotExist(resPath);
-                    }
-                    addedFiles.add(FsStuff.JoinPath(val.parentPath, val.path));
-                } catch (Exception e) {
-                    System.err.println("> ERROR: Failed to write file!");
-                    System.err.println(val);
-                    System.err.println(e.getMessage());
-                    e.printStackTrace();
+        AtomicInteger lastPercent = new AtomicInteger();
+        toWrite.stream()
+                .parallel()
+                .forEach((val) -> {
+            try {
+                if (MainConfig.glob.logs)
+                    System.out.println("  > New File/Folder: " + val);
+                String inPath = FsStuff.JoinPath(val.parentPath, val.path);
+                String resPath = FsStuff.JoinPath(MainConfig.glob.outputPath, "data",
+                        DirectoryTraversal.GetParentPathHashFolder(val.parentPath),
+                        val.GetHashPath());
+                // System.out.println("   > In Path:  " + inPath);
+                // System.out.println("   > Res Path: " + resPath);
+
+                if (val.isFile) {
+                    GoofyStream stream = FsStuff.CreateGoofyStream(inPath, resPath + ".bin");
+                    stream.connectOs(CompressionStuff::CompressStream);
+                    stream.connectOs(AesStuff.EncryptStreamRandomIV(val.EntryToHash()));
+                    stream.complete();
+                } else {
+                    FsStuff.CreateFolderIfNotExist(resPath);
                 }
+
+                synchronized (addedFiles) {
+                    addedFiles.add(FsStuff.JoinPath(val.parentPath, val.path));
+                    int percent = (addedFiles.size() * 100) / toWrite.size();
+                    if (percent != lastPercent.get()) {
+                        lastPercent.set(percent);
+                        System.out.println("  > Main Backup progress: " + percent + "%");
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("> ERROR: Failed to write file!");
+                System.err.println(val);
+                System.err.println(e.getMessage());
+                e.printStackTrace();
             }
         });
         System.out.println();

@@ -2,6 +2,8 @@ import utils.*;
 import utils.CryptoStuff.AesStuff;
 import utils.CryptoStuff.HashStuff;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class RestoreStuff {
     public static void DoRestore(String _restorePath) {
         System.out.println("> Doing Restore");
@@ -30,7 +32,9 @@ public class RestoreStuff {
 
         // Decrypt & Save Files
         System.out.println(" > Attempting to restore all files");
-        remoteTraversal.Entries.forEach((entry) -> {
+        AtomicInteger lastPercent = new AtomicInteger();
+        AtomicInteger inc = new AtomicInteger(0);
+        remoteTraversal.Entries.stream().parallel().forEach((entry) -> {
             try {
                 if (MainConfig.glob.logs)
                     System.out.println("  > Saving File/Folder: " + entry);
@@ -50,6 +54,15 @@ public class RestoreStuff {
                     stream.complete();
                 } else {
                     FsStuff.CreateFolderIfNotExist(resPath);
+                }
+
+                synchronized (inc) {
+                    inc.incrementAndGet();
+                    int percent = (inc.get() * 100) / remoteTraversal.Entries.size();
+                    if (percent != lastPercent.get()) {
+                        lastPercent.set(percent);
+                        System.out.println("  > Main Restore progress: " + percent + "%");
+                    }
                 }
             } catch (Exception e) {
                 System.err.println("> ERROR: Failed to write file!");
