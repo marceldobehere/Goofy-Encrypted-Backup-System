@@ -25,8 +25,6 @@ public class Main {
             Scanner scanner = new Scanner(System.in);
             while (!option.equals("backup") && !option.equals("backup-clean") && !option.equals("restore") && !option.equals("exit")) {
                 if (option.isEmpty())
-                    System.out.println("> No option provided.");
-                else
                     System.out.println("> Unknown option: " + option);
 
                 System.out.println("> Please choose between \"backup\", \"backup-clean\", \"restore\" and \"exit\".");

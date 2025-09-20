@@ -18,6 +18,7 @@ public class MainConfig {
     public List<Byte> randomSalt;
     public boolean syncDeletions;
     public boolean logs;
+    public int neededGb;
 
     @Override
     public String toString() {
@@ -28,6 +29,7 @@ public class MainConfig {
                 ", randomSalt=" + randomSalt +
                 ", syncDeletions=" + syncDeletions +
                 ", logs=" + logs +
+                ", neededGb=" + neededGb +
                 '}';
     }
 

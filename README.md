@@ -23,7 +23,8 @@ Still W.I.P
   "inputPaths": [ "./input" ],
   "outputPath": "./output",
   "syncDeletions": false,
-  "logs": true
+  "logs": true,
+  "neededGb": 500
 }
 ```
 
@@ -42,14 +43,10 @@ There are currently 4 options:
 * `restore` - Starts a restoration process and saves the data in your local directory.
 
 ### TODOs
-* Have some kind of ignore system, probably regex-ish based?
-* Save the main.conf file several times if the process fails midway
-* Have some kind of progress indicator in the output (maybe an ETA & speed?)
-* Delete all files first, then all folders
-* Log all attempts (success, error, warn, etc.) into log files
 * Turn into a docker image thingy
+* Have some kind of ignore system, probably regex-ish based?
+* Log all attempts (success, error, warn, etc.) into log files
 * Set the restore path in either the conf or have it asked in the cli
-* Have a check for remaining space before doing backups incase of insufficient space
 * Keep older versions of the main.conf or have some sort of snapshot system
 * Some kind of extra info in the files in case the main.conf gets lost?
 * Maybe store the main.conf as a recursive tree instead of a giant list to save space
