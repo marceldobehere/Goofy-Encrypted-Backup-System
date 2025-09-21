@@ -38,7 +38,7 @@ public class BackupStuff {
         DirectoryTraversal remoteTraversal = new DirectoryTraversal();
         if (FsStuff.DoesFileExist(remoteConf))
             remoteTraversal = JsonUtils.ParseJSON(FsStuff.ReadEncryptedFile(remoteConf, remoteConfExtra), DirectoryTraversal.class);
-        System.out.println(" > Remote Traversal: ");
+        System.out.println(" > Remote Traversal: " +  remoteTraversal.Entries.size() + " Entries");
         if (MainConfig.glob.logs)
             System.out.println(remoteTraversal);
         System.out.println();
@@ -73,7 +73,7 @@ public class BackupStuff {
         // Local Stuff
         System.out.println(" > Creating local traversal data");
         DirectoryTraversal traversal = new DirectoryTraversal(MainConfig.glob.inputPaths);
-        System.out.println(" > Local Traversal: ");
+        System.out.println(" > Local Traversal: " +  traversal.Entries.size() + " Entries");
         if (MainConfig.glob.logs)
             System.out.println(traversal);
         HashMap<String, DirectoryTraversal.TraversalEntry> localSet = traversal.ConvertToHashMap();

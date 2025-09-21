@@ -6,6 +6,7 @@ import com.marcel.utils.CryptoStuff.Base32Stuff;
 import com.marcel.utils.CryptoStuff.HashStuff;
 import com.marcel.utils.CryptoStuff.Pbkdf2Stuff;
 
+import java.time.LocalTime;
 import java.util.Scanner;
 
 
@@ -18,6 +19,7 @@ public class Main {
         Pbkdf2Stuff.InitPbkdf2Stuff(MainConfig.glob.randomSalt);
         AesStuff.TestAesStuff();
 
+        System.out.println(" > Current Time: " + LocalTime.now());
         System.out.println("> Started with args: " + String.join(",", args));
         String option = "";
         if (args.length > 0)
