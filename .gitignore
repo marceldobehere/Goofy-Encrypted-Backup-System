@@ -29,7 +29,6 @@ bin/
 .DS_Store
 
 .idea
-target
 
 input
 output
