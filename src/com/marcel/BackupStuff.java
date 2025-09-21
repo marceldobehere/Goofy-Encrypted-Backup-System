@@ -5,6 +5,8 @@ import org.apache.commons.io.FileUtils;
 import com.marcel.utils.CryptoStuff.AesStuff;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
@@ -14,6 +16,7 @@ public class BackupStuff {
     public static void DoBackup(boolean fullBackup) {
         System.out.println("> Doing Backup");
         final String remoteConf = FsStuff.JoinPath(MainConfig.glob.outputPath, "main.bin");
+        final String remoteConfBak = remoteConf + ".bak";
         final String remoteConfExtra = "RemoteConfig Yes!";
 
         // Check Total Space
@@ -36,8 +39,23 @@ public class BackupStuff {
         // Remote Stuff
         System.out.println(" > Attempting to load existing remote traversal data");
         DirectoryTraversal remoteTraversal = new DirectoryTraversal();
-        if (FsStuff.DoesFileExist(remoteConf))
-            remoteTraversal = JsonUtils.ParseJSON(FsStuff.ReadEncryptedFile(remoteConf, remoteConfExtra), DirectoryTraversal.class);
+        if (FsStuff.DoesFileExist(remoteConf)) {
+            try {
+                remoteTraversal = JsonUtils.ParseJSON(FsStuff.ReadEncryptedFile(remoteConf, remoteConfExtra), DirectoryTraversal.class);
+            } catch (Exception e) {
+                System.err.println("> REMOTE ERROR 1: " + e.getMessage());
+                e.printStackTrace();
+
+                if (FsStuff.DoesFileExist(remoteConfBak)) {
+                    try {
+                        remoteTraversal = JsonUtils.ParseJSON(FsStuff.ReadEncryptedFile(remoteConfBak, remoteConfExtra), DirectoryTraversal.class);
+                    } catch (Exception e2) {
+                        System.err.println("> REMOTE ERROR 2: " + e2.getMessage());
+                        e2.printStackTrace();
+                    }
+                }
+            }
+        }
         System.out.println(" > Remote Traversal: " +  remoteTraversal.Entries.size() + " Entries");
         if (MainConfig.glob.logs)
             System.out.println(remoteTraversal);
@@ -123,6 +141,8 @@ public class BackupStuff {
                         lastPercent.set(percent);
 
                         if (percent % 5 == 0) {
+                            // Backup old list
+                            Files.copy(Paths.get(remoteConf), Paths.get(remoteConfBak));
                             // Save new partial list
                             FsStuff.WriteEncryptedFile(remoteConf, JsonUtils.CreateJSON(tempTraversal, false), remoteConfExtra);
                         }
