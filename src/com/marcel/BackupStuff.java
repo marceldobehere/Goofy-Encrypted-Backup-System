@@ -18,7 +18,7 @@ public class BackupStuff {
 
         // Check Total Space
         long spaceTotal = new File(MainConfig.glob.outputPath).getTotalSpace() / (1024 * 1024 * 1024);
-        System.out.println(" > Space Total GB: " + spaceTotal);
+        System.out.println(" > Remote Space Total GB: " + spaceTotal);
         if (spaceTotal < MainConfig.glob.neededGb) {
             System.err.println("> NOT ENOUGH TOTAL SPACE!!! NEEDED: " + MainConfig.glob.neededGb + "GB BUT GOT " + spaceTotal + "GB INSTEAD");
             System.exit(-1);
@@ -27,7 +27,7 @@ public class BackupStuff {
         // Check Free Space
         long spaceFree = new File(MainConfig.glob.outputPath).getFreeSpace() / (1024 * 1024 * 1024);
         final long spaceFreeMin = 20;
-        System.out.println(" > Space Free GB: " + spaceFree);
+        System.out.println(" > Remote Space Free GB: " + spaceFree);
         if (spaceFree < spaceFreeMin) {
             System.err.println("> NOT ENOUGH FREE SPACE!!! NEEDED: " + spaceFreeMin + "GB BUT GOT " + spaceFree + "GB INSTEAD");
             System.exit(-1);
