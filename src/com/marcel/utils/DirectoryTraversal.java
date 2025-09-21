@@ -1,7 +1,7 @@
-package utils;
+package com.marcel.utils;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import utils.CryptoStuff.HashStuff;
+import com.marcel.utils.CryptoStuff.HashStuff;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -1,14 +1,14 @@
-import utils.*;
+package com.marcel;
+
+import com.marcel.utils.*;
 import org.apache.commons.io.FileUtils;
-import utils.CryptoStuff.AesStuff;
+import com.marcel.utils.CryptoStuff.AesStuff;
 
 import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class BackupStuff {
     public static void DoBackup(boolean fullBackup) {
@@ -17,7 +17,7 @@ public class BackupStuff {
         final String remoteConfExtra = "RemoteConfig Yes!";
 
         // Check Total Space
-        long spaceTotal = new File(remoteConf).getTotalSpace() / (1024 * 1024 * 1024);
+        long spaceTotal = new File(MainConfig.glob.outputPath).getTotalSpace() / (1024 * 1024 * 1024);
         System.out.println(" > Space Total GB: " + spaceTotal);
         if (spaceTotal < MainConfig.glob.neededGb) {
             System.err.println("> NOT ENOUGH TOTAL SPACE!!! NEEDED: " + MainConfig.glob.neededGb + "GB BUT GOT " + spaceTotal + "GB INSTEAD");
@@ -25,7 +25,7 @@ public class BackupStuff {
         }
 
         // Check Free Space
-        long spaceFree = new File(remoteConf).getFreeSpace() / (1024 * 1024 * 1024);
+        long spaceFree = new File(MainConfig.glob.outputPath).getFreeSpace() / (1024 * 1024 * 1024);
         final long spaceFreeMin = 20;
         System.out.println(" > Space Free GB: " + spaceFree);
         if (spaceFree < spaceFreeMin) {

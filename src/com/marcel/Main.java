@@ -1,8 +1,10 @@
-import utils.*;
-import utils.CryptoStuff.AesStuff;
-import utils.CryptoStuff.Base32Stuff;
-import utils.CryptoStuff.HashStuff;
-import utils.CryptoStuff.Pbkdf2Stuff;
+package com.marcel;
+
+import com.marcel.utils.*;
+import com.marcel.utils.CryptoStuff.AesStuff;
+import com.marcel.utils.CryptoStuff.Base32Stuff;
+import com.marcel.utils.CryptoStuff.HashStuff;
+import com.marcel.utils.CryptoStuff.Pbkdf2Stuff;
 
 import java.util.Scanner;
 

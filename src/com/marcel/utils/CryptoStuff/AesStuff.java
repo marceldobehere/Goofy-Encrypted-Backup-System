@@ -1,6 +1,6 @@
-package utils.CryptoStuff;
+package com.marcel.utils.CryptoStuff;
 
-import utils.MainConfig;
+import com.marcel.utils.MainConfig;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
@@ -8,7 +8,6 @@ import javax.crypto.CipherOutputStream;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
@@ -16,8 +15,6 @@ import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.function.Function;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 public class AesStuff {
 

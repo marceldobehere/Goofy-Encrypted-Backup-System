@@ -1,14 +1,14 @@
-package utils;
+package com.marcel.utils;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import utils.CryptoStuff.ArrConv;
-import utils.CryptoStuff.Pbkdf2Stuff;
+import com.marcel.utils.CryptoStuff.ArrConv;
+import com.marcel.utils.CryptoStuff.Pbkdf2Stuff;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.List;
 
-import static utils.CryptoStuff.HashStuff.HashInputToStr;
+import static com.marcel.utils.CryptoStuff.HashStuff.HashInputToStr;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class MainConfig {

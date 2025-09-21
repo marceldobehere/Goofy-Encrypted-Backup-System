@@ -1,6 +1,8 @@
-import utils.*;
-import utils.CryptoStuff.AesStuff;
-import utils.CryptoStuff.HashStuff;
+package com.marcel;
+
+import com.marcel.utils.*;
+import com.marcel.utils.CryptoStuff.AesStuff;
+import com.marcel.utils.CryptoStuff.HashStuff;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

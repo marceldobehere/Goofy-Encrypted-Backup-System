@@ -1,4 +1,4 @@
-package utils;
+package com.marcel.utils;
 
 import java.io.*;
 import java.util.Arrays;

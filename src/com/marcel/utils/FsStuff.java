@@ -1,8 +1,8 @@
-package utils;
+package com.marcel.utils;
 
-import utils.CryptoStuff.AesStuff;
-import utils.CryptoStuff.ArrConv;
-import utils.CryptoStuff.Pbkdf2Stuff;
+import com.marcel.utils.CryptoStuff.AesStuff;
+import com.marcel.utils.CryptoStuff.ArrConv;
+import com.marcel.utils.CryptoStuff.Pbkdf2Stuff;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class FsStuff {
     public static final String configPath = "./conf.json";

@@ -1,9 +1,7 @@
-package utils;
+package com.marcel.utils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.nio.file.Files;
 
 public class JsonUtils {
     public static final ObjectMapper jsonMapper = new ObjectMapper();

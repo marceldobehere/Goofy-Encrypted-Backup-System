@@ -1,4 +1,4 @@
-package utils.CryptoStuff;
+package com.marcel.utils.CryptoStuff;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.codec.digest.DigestUtils;

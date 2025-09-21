@@ -1,4 +1,4 @@
-package utils.CryptoStuff;
+package com.marcel.utils.CryptoStuff;
 
 import java.util.ArrayList;
 import java.util.List;

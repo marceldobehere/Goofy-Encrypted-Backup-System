@@ -1,4 +1,4 @@
-package utils.CryptoStuff;
+package com.marcel.utils.CryptoStuff;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
