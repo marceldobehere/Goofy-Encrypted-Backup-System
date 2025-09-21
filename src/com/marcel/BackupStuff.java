@@ -141,10 +141,13 @@ public class BackupStuff {
                         lastPercent.set(percent);
 
                         if (percent % 5 == 0) {
+                            System.out.println("   > Doing Temp Traversal Backup");
                             // Backup old list
-                            Files.copy(Paths.get(remoteConf), Paths.get(remoteConfBak));
+                            if (FsStuff.DoesFileExist(remoteConf))
+                                Files.copy(Paths.get(remoteConf), Paths.get(remoteConfBak));
                             // Save new partial list
                             FsStuff.WriteEncryptedFile(remoteConf, JsonUtils.CreateJSON(tempTraversal, false), remoteConfExtra);
+                            System.out.println("   > Done");
                         }
 
                         Long cTime = System.currentTimeMillis();
