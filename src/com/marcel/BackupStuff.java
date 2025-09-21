@@ -5,8 +5,10 @@ import org.apache.commons.io.FileUtils;
 import com.marcel.utils.CryptoStuff.AesStuff;
 
 import java.io.File;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
@@ -144,7 +146,7 @@ public class BackupStuff {
                             System.out.println("   > Doing Temp Traversal Backup");
                             // Backup old list
                             if (FsStuff.DoesFileExist(remoteConf))
-                                Files.copy(Paths.get(remoteConf), Paths.get(remoteConfBak));
+                                Files.copy(Paths.get(remoteConf), Paths.get(remoteConfBak), StandardCopyOption.REPLACE_EXISTING);
                             // Save new partial list
                             FsStuff.WriteEncryptedFile(remoteConf, JsonUtils.CreateJSON(tempTraversal, false), remoteConfExtra);
                             System.out.println("   > Done");
