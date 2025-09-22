@@ -49,6 +49,16 @@ public class FsStuff {
         return Files.exists(Paths.get(path));
     }
 
+    public static long GetFileSize(String path) {
+        try {
+            return Files.size(Paths.get(path));
+        } catch (IOException e) {
+            System.err.println("> File Size Error: " + e.getMessage());
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
     public static String ReadEntireFile(String path) {
         try {
             return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8);

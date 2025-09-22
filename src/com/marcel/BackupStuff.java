@@ -13,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class BackupStuff {
     public static void DoBackup(boolean fullBackup) {
@@ -113,6 +114,7 @@ public class BackupStuff {
 
         AtomicInteger lastPercent = new AtomicInteger();
         Long startTime = System.currentTimeMillis();
+        AtomicLong totalSize = new AtomicLong();
         toWrite.stream()
                 .parallel()
                 .forEach((val) -> {
@@ -136,6 +138,10 @@ public class BackupStuff {
                 }
 
                 synchronized (addedFiles) {
+                    long fSize = FsStuff.GetFileSize(inPath);
+                    long tempSize = totalSize.addAndGet(fSize);
+                    double tempSizeGb = Math.round((tempSize) / (1024 * 1024 * 1024.0 / 100.0)) / 100.0;
+                    // System.out.println("> FSize: " + fSize + ", Temp: " + tempSize + ", Temp GB: " + tempSizeGb);
                     tempTraversal.Entries.add(val);
                     addedFiles.add(FsStuff.JoinPath(val.parentPath, val.path));
                     int percent = (addedFiles.size() * 100) / toWrite.size();
@@ -156,7 +162,7 @@ public class BackupStuff {
                         double elapsed = ((cTime - startTime) / 1000.0);
                         double eta = elapsed / (((double)addedFiles.size() / toWrite.size()));
                         double remaining = eta - elapsed;
-                        System.out.println("  > Main Backup progress: " + percent + "%, Elapsed: " + formatTime(elapsed) + ", Remaining: " + formatTime(remaining));
+                        System.out.println("  > Main Backup progress: " + percent + "%, Elapsed: " + formatTime(elapsed) + ", Remaining: " + formatTime(remaining) + ", Processed Data Size: " + tempSizeGb + " GB");
                     }
                 }
             } catch (Exception e) {
@@ -220,7 +226,7 @@ public class BackupStuff {
     public static void AutoBackup() {
         System.out.println("> Starting Auto Backup");
         LocalTime timeNow = LocalTime.now(); // LocalTime.of(10, 0, 0);
-        LocalTime timeWanted = LocalTime.of(1, 18, 0); // LocalTime.of(MainConfig.glob.autoBackupStartHour, MainConfig.glob.autoBackupStartMinute, 0);
+        LocalTime timeWanted = LocalTime.of(MainConfig.glob.autoBackupStartHour, MainConfig.glob.autoBackupStartMinute, 0); // LocalTime.of(1, 18, 0);
         System.out.println(" > Current Time: " + timeNow);
         System.out.println(" > Starting at: " + timeWanted);
 
